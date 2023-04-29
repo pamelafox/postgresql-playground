@@ -18,6 +18,7 @@
 				"ms-python.python",
 				"ms-python.vscode-pylance",
 				"charliermarsh.ruff",
+				"ms-python.black-formatter",
 				"mtxr.sqltools",
 				"mtxr.sqltools-driver-pg",
 				"ms-vscode.vscode-node-azure-pack"
@@ -37,14 +38,25 @@
 				"python.formatting.provider": "black",
 				"sqltools.connections": [
 					{
-						"name": "Container database",
+						"name": "Local database",
 						"driver": "PostgreSQL",
-						"previewLimit": 50,
 						"server": "localhost",
 						"port": 5432,
-						"database": "app",
-						"username": "app_user",
-						"password": "app_password"
+						"database": "postgres",
+						"username": "admin",
+						"password": "LocalPasswordOnly"
+					},
+					{
+						"name": "Azure database",
+						"driver": "PostgreSQL",
+						"server": "<HOSTNAME>.postgres.database.azure.com",
+						"port": 5432,
+						"database": "postgres",
+						"username": "<USERNAME>",
+						"askForPassword": true,
+						"pgOptions": {
+							"ssl": true
+						}
 					}
 				],
 				"files.exclude": {
