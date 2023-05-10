@@ -2,22 +2,19 @@ import os
 
 
 from dotenv import load_dotenv
-from sqlalchemy import String
-from sqlalchemy.orm import Session, Mapped
+from sqlalchemy import String, Column, Integer, Identity, select
+from sqlalchemy.orm import Session
 from sqlalchemy.orm import DeclarativeBase
-from sqlalchemy.orm import mapped_column
 from sqlalchemy import create_engine
-
 
 # Define the models
 class Base(DeclarativeBase):
     pass
 
-
 class Restaurant(Base):
     __tablename__ = "restaurants"
-    id: Mapped[int] = mapped_column("id", String, primary_key=True)
-    name: Mapped[str] = mapped_column("name", String)
+    id = Column(Integer, Identity(start=1, cycle=True), primary_key=True)
+    name = Column(String(100), nullable=False)
 
 
 # Connect to the database
@@ -37,5 +34,13 @@ Base.metadata.create_all(engine)
 
 # Insert data and issue queries
 with Session(engine) as session:
-    pass
+    # insert restaurant
+    restaurant = Restaurant(name="Test restaurant")
+    session.add(restaurant)
+    session.commit()
 
+    # select restaurant "Test restaurant"
+    query = select(Restaurant).where(Restaurant.name == "Test restaurant")
+    restaurants = session.execute(query).scalars().all()
+    print(restaurants)
+    pass
