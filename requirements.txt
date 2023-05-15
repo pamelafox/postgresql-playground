@@ -1,4 +1,4 @@
 psycopg2==2.9.6
 python-dotenv==1.0.0
-SQLAlchemy==2.0.12
+SQLAlchemy==2.0.13
 faker==18.7.0
