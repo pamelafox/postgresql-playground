@@ -1,7 +1,7 @@
 import os
 
 from dotenv import load_dotenv
-from sqlalchemy import String, create_engine
+from sqlalchemy import String, create_engine, select
 from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column
 
 
@@ -14,6 +14,7 @@ class Restaurant(Base):
     __tablename__ = "restaurants"
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String)
+    address: Mapped[str] = mapped_column(String, nullable=True)
 
 
 # Connect to the database
@@ -36,3 +37,6 @@ with Session(engine) as session:
     for i in range(10):
         session.add(Restaurant(name=f"Cheese Shop #{i}"))
     session.commit()
+
+    query = select(Restaurant)
+    results = session.execute(query)
