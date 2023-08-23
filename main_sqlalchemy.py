@@ -12,8 +12,8 @@ class Base(DeclarativeBase):
 
 class Restaurant(Base):
     __tablename__ = "restaurants"
-    id: Mapped[int] = mapped_column("id", String, primary_key=True)
-    name: Mapped[str] = mapped_column("name", String)
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str] = mapped_column(String)
 
 
 # Connect to the database
@@ -28,8 +28,11 @@ if DBHOST != "localhost":
 engine = create_engine(DATABASE_URI, echo=True)
 
 # Create tables in database
+Base.metadata.drop_all(engine)
 Base.metadata.create_all(engine)
 
 # Insert data and issue queries
 with Session(engine) as session:
-    pass
+    for i in range(10):
+        session.add(Restaurant(name=f"Cheese Shop #{i}"))
+    session.commit()

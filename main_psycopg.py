@@ -2,12 +2,13 @@ import os
 
 import psycopg2
 from dotenv import load_dotenv
+from azure.identity import DefaultAzureCredential
 
 # Connect to the database
 load_dotenv(".env", override=True)
 DBUSER = os.environ["DBUSER"]
 DBPASS = os.environ["DBPASS"]
-#azure_credential = DefaultAzureCredential()
+azure_credential = DefaultAzureCredential()
 #DBPASS = azure_credential.get_token("https://ossrdbms-aad.database.windows.net")
 DBHOST = os.environ["DBHOST"]
 DBNAME = os.environ["DBNAME"]
