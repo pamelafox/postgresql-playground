@@ -9,8 +9,11 @@ DBUSER = os.environ["DBUSER"]
 DBPASS = os.environ["DBPASS"]
 DBHOST = os.environ["DBHOST"]
 DBNAME = os.environ["DBNAME"]
-
-conn = psycopg2.connect(database=DBNAME, user=DBUSER, password=DBPASS, host=DBHOST, sslmode="require")
+# Use SSL if not connecting to localhost
+sslmode = "disable"
+if DBHOST != "localhost":
+    sslmode = "require"
+conn = psycopg2.connect(database=DBNAME, user=DBUSER, password=DBPASS, host=DBHOST, sslmode=sslmode)
 cur = conn.cursor()
 cur.execute("DROP TABLE IF EXISTS restaurants")
 cur.execute("CREATE TABLE restaurants (id SERIAL PRIMARY KEY,name VARCHAR(255) NOT NULL)")
