@@ -6,7 +6,6 @@ services:
       context: ..
       dockerfile: .devcontainer/Dockerfile
       args:
-        # [Choice] Python version: 3, 3.8, 3.7, 3.6
         IMAGE: python:3.11
 
     volumes:
@@ -19,7 +18,7 @@ services:
     network_mode: service:db
 
   db:
-    image: postgres:latest
+    image: pgvector/pgvector:pg16
     restart: unless-stopped
     volumes:
       - postgres-data:/var/lib/postgresql/data

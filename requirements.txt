@@ -3,3 +3,5 @@ python-dotenv==1.0.1
 SQLAlchemy==2.0.27
 faker==23.2.1
 pandas==2.2.0
+pgvector==0.2.5
+SQLModel==0.0.16

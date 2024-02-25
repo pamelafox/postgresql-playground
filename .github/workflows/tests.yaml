@@ -17,7 +17,7 @@ jobs:
         python_version: ["3.9", "3.10", "3.11", "3.12"]
     services:
       postgres:
-        image: postgres:11
+        image: pgvector/pgvector:pg16
         env:
           POSTGRES_PASSWORD: postgres
         ports:
@@ -37,8 +37,9 @@ jobs:
             python3 -m pip install -r requirements.txt
         - name: Run Pytest tests
           run: | 
-            python3 main_psycopg.py
-            python3 main_sqlalchemy.py
+            python3 examples/psycopg_items.py
+            python3 examples/sqlalchemy_items.py
+            python3 examples/sqlalchemy_movies.py
           env:
             DBHOST: localhost
             DBUSER: postgres
