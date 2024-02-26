@@ -17,16 +17,17 @@ class Item(Base):
     embedding = mapped_column(Vector(3))
 
 
-# Connect to the database
+# Connect to the database based on environment variables
 load_dotenv(".env", override=True)
 DBUSER = os.environ["DBUSER"]
 DBPASS = os.environ["DBPASS"]
 DBHOST = os.environ["DBHOST"]
 DBNAME = os.environ["DBNAME"]
 DATABASE_URI = f"postgresql://{DBUSER}:{DBPASS}@{DBHOST}/{DBNAME}"
+# Use SSL if not connecting to localhost
 if DBHOST != "localhost":
     DATABASE_URI += "?sslmode=require"
-engine = create_engine(DATABASE_URI, echo=True)
+engine = create_engine(DATABASE_URI, echo=False)
 
 # Create tables in database
 Base.metadata.drop_all(engine)
@@ -43,28 +44,30 @@ with Session(engine) as session:
         postgresql_with={"m": 16, "ef_construction": 64},
         postgresql_ops={"embedding": "vector_l2_ops"},
     )
-    # or
-    index = Index(
-        "my_index",
-        Item.embedding,
-        postgresql_using="ivfflat",
-        postgresql_with={"lists": 100},
-        postgresql_ops={"embedding": "vector_l2_ops"},
-    )
-
     index.create(engine)
 
-    item = Item(embedding=[1, 2, 3])
-    session.add(item)
-    session.commit()
+    session.add_all(
+        [
+            Item(embedding=[1, 2, 3]),
+            Item(embedding=[-1, 1, 3]),
+            Item(embedding=[0, -1, -2]),
+        ]
+    )
 
-    closest = session.scalars(select(Item).order_by(Item.embedding.l2_distance([3, 1, 2])).limit(5))
-    print(list(closest))
+    # Find 2 closest vectors to [3, 1, 2]
+    closest_items = session.scalars(select(Item).order_by(Item.embedding.l2_distance([3, 1, 2])).limit(2))
+    for item in closest_items:
+        print(item.embedding)
 
-    distance = session.scalars(select(Item.embedding.l2_distance([3, 1, 2])))
-    print(list(distance))
+    # Calculate distance between [3, 1, 2] and the first vector
+    distance = session.scalars(select(Item.embedding.l2_distance([3, 1, 2]))).first()
+    print(distance)
 
-    close_enough = session.scalars(select(Item).filter(Item.embedding.l2_distance([3, 1, 2]) < 5))
-    print(list(close_enough))
+    # Find vectors within distance 5 from [3, 1, 2]
+    close_enough_items = session.scalars(select(Item).filter(Item.embedding.l2_distance([3, 1, 2]) < 5))
+    for item in close_enough_items:
+        print(item.embedding)
 
-    session.scalars(select(func.avg(Item.embedding))).first()
+    # Calculate average of all vectors
+    avg_embedding = session.scalars(select(func.avg(Item.embedding))).first()
+    print(avg_embedding)

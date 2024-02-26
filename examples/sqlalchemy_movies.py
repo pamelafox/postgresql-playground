@@ -20,13 +20,14 @@ class Movie(Base):
     title_vector = mapped_column(Vector(1536))  # ada-002 is 1536-dimensional
 
 
-# Connect to the database
+# Connect to the database based on environment variables
 load_dotenv(".env", override=True)
 DBUSER = os.environ["DBUSER"]
 DBPASS = os.environ["DBPASS"]
 DBHOST = os.environ["DBHOST"]
 DBNAME = os.environ["DBNAME"]
 DATABASE_URI = f"postgresql://{DBUSER}:{DBPASS}@{DBHOST}/{DBNAME}"
+# Use SSL if not connecting to localhost
 if DBHOST != "localhost":
     DATABASE_URI += "?sslmode=require"
 engine = create_engine(DATABASE_URI, echo=False)
@@ -49,7 +50,7 @@ with Session(engine) as session:
 
     index.create(engine)
 
-    # open openai_movies.json and insert the data into the database
+    # Insert the movies from the JSON file
     current_directory = Path(__file__).parent
     data_path = current_directory / "movies_ada002.json"
     with open(data_path) as f:
@@ -62,6 +63,9 @@ with Session(engine) as session:
     # Query the database
     query = select(Movie).where(Movie.title == "Winnie the Pooh")
     target_movie = session.execute(query).scalars().first()
+    if target_movie is None:
+        print("Movie not found")
+        exit(1)
 
     # Find the 5 most similar movies to "Winnie the Pooh"
     closest = session.scalars(
