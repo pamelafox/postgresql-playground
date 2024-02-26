@@ -3,3 +3,4 @@ safe:
  - python-dotenv
  - SQLAlchemy
  - faker
+ - pandas
