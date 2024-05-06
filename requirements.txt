@@ -1,5 +1,5 @@
 psycopg2==2.9.9
 python-dotenv==1.0.1
 SQLAlchemy==2.0.29
-faker==24.14.1
+faker==25.0.1
 pandas==2.2.2
